@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 from sklearn.dummy import DummyClassifier
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -46,8 +47,7 @@ def compute_metrics_by_max_features(
 
 
 def add_dummy_baseline(
-    metrics_by_max_features: dict, train_df: pd.DataFrame, val_df: pd.DataFrame
-) -> dict:
+    metrics_by_max_features: dict, train_df: pd.DataFrame, val_df: pd.DataFrame) -> dict:
     """Fit a DummyClassifier and return a dict with its report added under the key 'baseline'"""
 
     x_train, y_train = train_df["text"], train_df["label"]
@@ -89,14 +89,12 @@ def display_metrics_table(metrics_by_max_features: dict) -> pd.DataFrame:
 
 def best_max_features_from_metrics(f1_dict: dict) -> tuple[int, dict]:
     """Return the (max_features, report) pair with the highest weighted F1.
-
-    Skips non-numeric keys (e.g. 'baseline') so DummyClassifier is not selected.
     """
     best_max_features = None
     best_f1 = -1.0
 
     for max_feat, report in f1_dict.items():
-        if not isinstance(max_feat, int):
+        if not isinstance(max_feat, int): # Skips non-numeric keys, so DummyClassifier is not selected.
             continue
         val_f1 = report["weighted avg"]["f1-score"]
         if val_f1 > best_f1:
@@ -124,19 +122,21 @@ def train_model(df: pd.DataFrame, max_features: int, save_path: str) -> Pipeline
     return pipeline
 
 
+
 def main() -> None:
     train_df, test_df, val_df = load_data()
     train_df = preprocess_data(train_df)
-    test_df = preprocess_data(test_df)
     val_df = preprocess_data(val_df)    
 
     max_features_options = [500, 1000, 2500, 5000, 10000]
     max_features_results = compute_metrics_by_max_features(train_df, val_df, max_features_options)
     max_features_results = add_dummy_baseline(max_features_results, train_df, val_df)
-    display_metrics_table(max_features_results)
-    best_max_features, best_max_features_report = best_max_features_from_metrics(max_features_results)
+    best_max_features, _ = best_max_features_from_metrics(max_features_results)
+
     model = train_model(train_df, best_max_features, save_path="../models/baseline_model.pkl")
-    print(model.score(test_df["text"], test_df["label"]))
     
+    print(f"accuracy: {model.score(val_df['text'], val_df['label']):.3f}")
+    print(f"best max_features: {best_max_features} with weighted F1 score: {max_features_results[best_max_features]['weighted avg']['f1-score']:.3f}")
+
 if __name__ == "__main__":
     main()

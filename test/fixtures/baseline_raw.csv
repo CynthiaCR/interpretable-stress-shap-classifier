@@ -1,0 +1,9 @@
+subreddit,post_id,sentence_range,text,label,confidence
+anxiety,syn_001,"(0, 5)",I had a panic attack at work and could not stop shaking.,1,0.9
+anxiety,syn_001,"(0, 5)",I had a panic attack at work and could not stop shaking.,1,0.9
+ptsd,syn_002,"(5, 10)",Had a nice walk in the park this morning and felt calm.,0,0.95
+relationships,syn_003,"(0, 5)",,1,0.7
+assistance,syn_004,"(10, 15)",Money is tight again this month and rent is due soon.,1,0.85
+almosthomeless,syn_005,"(0, 5)",Just finished a great book and made dinner with friends.,0,1.0
+ptsd,syn_002,"(5, 10)",Had a nice walk in the park this morning and felt calm.,0,0.95
+stress,syn_006,"(15, 20)",,0,0.6
